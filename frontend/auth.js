@@ -1,4 +1,5 @@
-const API_BASE = "http://localhost:8000/api";
+// API_BASE is loaded from config.js
+
 
 function toggleAuth(mode) {
     const loginForm = document.getElementById('loginForm');

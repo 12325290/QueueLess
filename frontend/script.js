@@ -1,5 +1,5 @@
-const API_BASE = "http://localhost:8000/api";
-const WS_BASE = "ws://localhost:8000/ws";
+// API_BASE and WS_BASE are loaded from config.js
+
 let currentData = null; // Cache for searching
 let socket = null;
 
