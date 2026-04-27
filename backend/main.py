@@ -342,7 +342,12 @@ async def next_in_queue(req: NextRequest, admin: dict = Depends(get_current_admi
 
 @app.on_event("startup")
 async def startup_event():
-    await init_mongodb()
+    try:
+        await init_mongodb()
+        print("MongoDB connected successfully.")
+    except Exception as e:
+        print(f"WARNING: MongoDB startup init failed: {e}")
+        print("Server will still start. Connection will be retried on first request.")
 
 if __name__ == "__main__":
     import uvicorn
