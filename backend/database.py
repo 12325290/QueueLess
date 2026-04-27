@@ -2,7 +2,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
 # MongoDB Configuration (Atlas)
-MONGO_URL = "mongodb+srv://amit:amit%40123@cluster0.i6ejvoj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+# Added tls=True for better compatibility with cloud providers like Render
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://amit:amit%40123@cluster0.i6ejvoj.mongodb.net/queueless?retryWrites=true&w=majority&appName=Cluster0&tls=true")
 DB_NAME = "queueless"
 
 client = AsyncIOMotorClient(MONGO_URL)
