@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QueueLess | Smart Slot Booking</title>
+    <title>QueueLess | Smart Slot Booking System for LPU</title>
+    <meta name="description" content="QueueLess is a smart slot booking system for LPU canteens, salons, and clinics. Skip the lines and manage your time efficiently.">
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <!-- Notification Toast -->
     <div id="notificationToast" class="toast hidden">
         <div class="toast-content">
-            <span class="icon">🔔</span>
+            <i class="fas fa-bell"></i>
             <p id="toastMessage">Notification message</p>
         </div>
     </div>
@@ -21,60 +30,87 @@
     <header class="glass-header">
         <div class="container nav-bar">
             <div class="logo">Queue<span>Less</span></div>
-            <nav>
+            <nav id="mainNav">
                 <a href="#canteens">Canteens</a>
                 <a href="#salons">Salons</a>
                 <a href="#clinics">Clinics</a>
                 <a href="admin.html" class="btn-outline">Admin Panel</a>
+                <div id="authLinks" style="display:inline-block; margin-left:1.5rem;">
+                    <!-- Populated by JS -->
+                </div>
             </nav>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero container">
-        <h1>Skip the line. Own your time.</h1>
+        <div class="hero-badge">Smart Queue Management</div>
+        <h1>Skip the line. <br><span>Own your time.</span></h1>
         <p>Book a slot at LPU's canteens, salons, and clinics right from your phone. Get virtual tokens and show up exactly when it's your turn.</p>
     </section>
 
     <!-- Search Bar -->
     <div class="container search-container">
-        <input type="text" id="searchInput" placeholder="🔍 Search for canteens, salons, clinics..." oninput="filterServices()">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search for canteens, salons, clinics..." oninput="filterServices()">
+        </div>
     </div>
 
     <!-- Services Container -->
     <main class="container">
         <!-- Canteens -->
         <section id="canteens" class="service-section">
-            <h2>🍔 Canteens</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-hamburger"></i> Canteens</h2>
+                <div class="live-indicator"><span class="dot"></span> Live Status</div>
+            </div>
             <div class="card-grid" id="canteenGrid">
-                <div class="spinner"></div> <!-- Loading skeleton -->
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>Fetching latest data...</p>
+                </div>
             </div>
         </section>
 
         <!-- Salons -->
         <section id="salons" class="service-section">
-            <h2>💇 Salons</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-scissors"></i> Salons</h2>
+                <div class="live-indicator"><span class="dot"></span> Live Status</div>
+            </div>
             <div class="card-grid" id="salonGrid">
-                <div class="spinner"></div>
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>Fetching latest data...</p>
+                </div>
             </div>
         </section>
 
         <!-- Clinics -->
         <section id="clinics" class="service-section">
-            <h2>🏥 Clinics</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-hospital"></i> Clinics</h2>
+                <div class="live-indicator"><span class="dot"></span> Live Status</div>
+            </div>
             <div class="card-grid" id="clinicGrid">
-                <div class="spinner"></div>
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>Fetching latest data...</p>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- Booking details dashboard (for currently active user token) -->
+    <!-- Active Status Bar (Floating) -->
     <div class="active-status hidden" id="activeStatus">
         <div class="status-content">
-            <h3>Your Live Queue Status</h3>
+            <div class="status-header">
+                <h3><i class="fas fa-ticket-alt"></i> Your Active Booking</h3>
+            </div>
             <div class="status-grid">
                 <div class="status-item">
-                    <span>Your Token</span>
+                    <span>Token</span>
                     <strong id="userTokenDisplay">-</strong>
                 </div>
                 <div class="status-item">
@@ -89,8 +125,20 @@
                     <span>ETA</span>
                     <strong id="etaDisplay">-</strong>
                 </div>
-                <div class="status-item">
-                    <button class="btn-danger" id="cancelBtn" onclick="cancelBooking()">Cancel</button>
+                <div class="status-item cancel-action">
+                    <button class="btn-danger-outline" id="cancelBtn" onclick="cancelBooking()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="queue-progress-container">
+                <div class="queue-progress-bar">
+                    <div id="queueProgressFill" class="progress-fill" style="width: 5%"></div>
+                </div>
+                <div class="progress-labels">
+                    <span>Joined</span>
+                    <span>Your Turn</span>
                 </div>
             </div>
         </div>
@@ -100,30 +148,47 @@
     <div id="bookingModal" class="modal hidden">
         <div class="modal-content glass-card">
             <span class="close-btn" onclick="closeModal()">&times;</span>
-            <h2 id="modalTitle">Book Slot</h2>
+            <div class="modal-header">
+                <i class="fas fa-calendar-check"></i>
+                <h2 id="modalTitle">Book Slot</h2>
+            </div>
             <form id="bookingForm" onsubmit="submitBooking(event)">
                 <input type="hidden" id="serviceId">
                 <input type="hidden" id="serviceCategory">
                 
                 <div class="form-group">
-                    <label for="userName">Name</label>
-                    <input type="text" id="userName" required placeholder="Enter your full name">
+                    <label for="userName">Full Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="userName" required placeholder="John Doe">
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="userPhone">Phone Number</label>
-                    <input type="tel" id="userPhone" required pattern="[0-9]{10}" placeholder="10-digit number">
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="userPhone" required pattern="[0-9]{10}" placeholder="10-digit number">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Available Slots Left</label>
-                    <div class="slot-count" id="slotsLeft">--</div>
+                <div class="modal-info">
+                    <div class="info-item">
+                        <span>Slots Left</span>
+                        <strong id="slotsLeft">--</strong>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn-primary" id="bookBtn">Confirm Booking</button>
             </form>
         </div>
     </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 QueueLess - Smart Campus Solutions</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>

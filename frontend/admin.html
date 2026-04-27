@@ -4,66 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | QueueLess</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header class="glass-header">
         <div class="container nav-bar">
-            <div class="logo">Queue<span>Less</span> <small style="color:var(--text-secondary);font-size:12px;">Admin</small></div>
+            <div class="logo">Queue<span>Less</span> <small class="admin-badge">Admin</small></div>
             <nav>
-                <a href="index.html" class="btn-outline">User View</a>
+                <a href="index.html" class="btn-outline"><i class="fas fa-external-link-alt"></i> User View</a>
             </nav>
         </div>
     </header>
 
     <main class="container admin-view">
         <div class="admin-header">
-            <h2>Queue Management</h2>
+            <h2><i class="fas fa-user-shield"></i> Queue Management</h2>
         </div>
 
         <div class="flex-container">
             <!-- Sidebar: Categories & Services -->
-            <aside class="admin-sidebar" id="adminSidebar">
-                <!-- Populated by JS -->
-                Loading services...
+            <aside class="admin-sidebar">
+                <div class="sidebar-header">
+                    <i class="fas fa-list"></i> Select Service
+                </div>
+                <div id="adminSidebar">
+                    <div class="spinner-small"></div>
+                </div>
             </aside>
 
             <!-- Main Panel: Queue Viewer -->
             <section class="admin-content" id="adminContent">
-                <div class="queue-header">
-                    <div>
+                <div class="queue-status-card">
+                    <div class="queue-info">
                         <h3 id="manageTitle">Select a service to manage</h3>
-                        <p style="color:var(--text-secondary);" id="manageLoc"></p>
+                        <p id="manageLoc"></p>
                     </div>
-                    <div style="text-align: right;">
-                        <span style="font-size:0.9rem; color:var(--text-secondary);">Currently Serving</span><br>
-                        <strong style="font-size:2rem; color:var(--accent-color);" id="manageCurrentToken">--</strong>
+                    <div class="serving-display">
+                        <span>Currently Serving</span>
+                        <strong id="manageCurrentToken">--</strong>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 2rem;">
-                    <button class="btn-primary" id="nextBtn" onclick="callNext()" disabled>Call Next Person</button>
+                <div class="admin-actions">
+                    <button class="btn-primary btn-large" id="nextBtn" onclick="callNext()" disabled>
+                        <i class="fas fa-volume-up"></i> Call Next Person
+                    </button>
                 </div>
 
-                <h3>Waiting List</h3>
-                <div class="table-container" style="margin-top: 1rem; overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Token</th>
-                                <th>Name</th>
-                                <th>Phone</th>
-                            </tr>
-                        </thead>
-                        <tbody id="queueTableBody">
-                            <tr>
-                                <td colspan="4" style="text-align:center;">Select a service first</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="waiting-list-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-users"></i> Waiting List</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Token</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queueTableBody">
+                                <tr>
+                                    <td colspan="4" class="empty-state">Select a service from the sidebar to view its queue</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
         </div>

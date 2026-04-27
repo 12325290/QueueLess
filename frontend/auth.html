@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Sign Up | QueueLess</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            min-height: 80vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.05);
+            padding: 5px;
+            border-radius: 12px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+            color: var(--text-secondary);
+        }
+        .auth-tab.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="glass-header">
+        <div class="container nav-bar">
+            <div class="logo">Queue<span>Less</span></div>
+            <nav>
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container auth-container">
+        <div class="auth-card glass-card">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="loginTab" onclick="toggleAuth('login')">Login</div>
+                <div class="auth-tab" id="signupTab" onclick="toggleAuth('signup')">Sign Up</div>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="modal-header">
+                    <h2>Welcome Back</h2>
+                    <p>Enter your credentials to access your account</p>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="loginUser" required placeholder="your_username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPass" required placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Login</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+                <div class="modal-header">
+                    <h2>Create Account</h2>
+                    <p>Join QueueLess to manage your bookings</p>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signupUser" required placeholder="chosen_username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signupEmail" required placeholder="name@lpu.in">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPass" required placeholder="Minimum 8 characters">
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%;">Sign Up</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="auth.js"></script>
+</body>
+</html>

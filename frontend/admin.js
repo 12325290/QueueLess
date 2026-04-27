@@ -1,11 +1,55 @@
 const API_BASE = "http://localhost:8000/api";
+const WS_BASE = "ws://localhost:8000/ws";
 
 let selectedCategory = null;
 let selectedServiceId = null;
+let socket = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+    if (!checkAdmin()) return;
     fetchSidebarServices();
+    initWebSocket();
 });
+
+function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+}
+
+function initWebSocket() {
+    socket = new WebSocket(WS_BASE);
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.event === "queue_update") {
+            // If the update is for the currently selected service, refresh the queue
+            if (data.service_id === selectedServiceId) {
+                loadQueue();
+            }
+            // Also refresh sidebar counts/status if needed
+            fetchSidebarServices();
+        }
+    };
+
+    socket.onclose = () => {
+        setTimeout(initWebSocket, 5000);
+    };
+}
+
+function checkAdmin() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = localStorage.getItem('token');
+    
+    if (!token || !user || user.is_admin !== 1) {
+        alert("Access Denied: Admins Only");
+        window.location.href = 'index.html';
+        return false;
+    }
+    return true;
+}
 
 async function fetchSidebarServices() {
     try {
@@ -13,13 +57,10 @@ async function fetchSidebarServices() {
         const data = await response.json();
         
         const sidebar = document.getElementById('adminSidebar');
-        sidebar.innerHTML = ''; // clear
+        sidebar.innerHTML = ''; 
 
-        // Canteens section
         appendSidebarSection(sidebar, "Canteens", data.canteens, "canteens");
-        // Salons section
         appendSidebarSection(sidebar, "Salons", data.salons, "salons");
-        // Clinics section
         appendSidebarSection(sidebar, "Clinics", data.clinics, "clinics");
 
     } catch (error) {
@@ -28,32 +69,32 @@ async function fetchSidebarServices() {
 }
 
 function appendSidebarSection(parent, titleText, items, category) {
-    const title = document.createElement('h3');
-    title.innerText = titleText;
+    const iconClass = category === 'canteens' ? 'fa-hamburger' : category === 'salons' ? 'fa-scissors' : 'fa-hospital';
+    const title = document.createElement('div');
+    title.className = 'sidebar-category';
+    title.innerHTML = `<i class="fas ${iconClass}"></i> ${titleText}`;
     parent.appendChild(title);
 
     items.forEach(item => {
         const btn = document.createElement('button');
         btn.className = 'sidebar-btn';
-        btn.innerText = item.name;
+        if (item.id === selectedServiceId) btn.classList.add('active');
+        btn.innerHTML = `<i class="fas fa-chevron-right"></i> ${item.name} <span class="badge">${item.queue.length}</span>`;
         btn.onclick = () => selectService(category, item.id, item.name, item.location, btn);
         parent.appendChild(btn);
     });
 }
 
 function selectService(category, id, name, location, btnElement) {
-    // UI update for active button
     document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
     if (btnElement) btnElement.classList.add('active');
 
     selectedCategory = category;
     selectedServiceId = id;
 
-    // Update Header
     document.getElementById('manageTitle').innerText = name;
-    document.getElementById('manageLoc').innerText = "📍 " + location;
+    document.getElementById('manageLoc').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${location}`;
 
-    // Fetch and render queue
     loadQueue();
 }
 
@@ -64,10 +105,8 @@ async function loadQueue() {
         const response = await fetch(`${API_BASE}/queue/${selectedCategory}/${selectedServiceId}`);
         const data = await response.json();
 
-        // Update current token
         document.getElementById('manageCurrentToken').innerText = data.current_token;
 
-        // Render table
         const tbody = document.getElementById('queueTableBody');
         tbody.innerHTML = '';
 
@@ -98,7 +137,7 @@ async function callNext() {
 
     const btn = document.getElementById('nextBtn');
     btn.disabled = true;
-    btn.innerText = "Processing...";
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
     try {
         const reqData = {
@@ -108,22 +147,27 @@ async function callNext() {
 
         const response = await fetch(`${API_BASE}/admin/next`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(),
             body: JSON.stringify(reqData)
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            // refresh
             loadQueue();
         } else {
-            alert("Error: " + data.detail);
+            if (response.status === 401 || response.status === 403) {
+                alert("Session expired or unauthorized. Please login again.");
+                window.location.href = 'auth.html';
+            } else {
+                alert("Error: " + (data.detail || "Action failed"));
+            }
         }
     } catch (error) {
         console.error(error);
         alert("Failed to advance queue");
     } finally {
         btn.innerText = "Call Next Person";
+        btn.disabled = false;
     }
 }
