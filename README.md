@@ -47,7 +47,7 @@ QueueLess solves this by providing a **digital queue system with real-time track
 | -------- | --------------------- |
 | Frontend | HTML, CSS, JavaScript |
 | Backend  | FastAPI (Python)      |
-| Database | JSON (data.json)      |
+| Database | MongoDB ,JSON         |
 | API      | REST APIs             |
 | Server   | Uvicorn               |
 
@@ -135,7 +135,7 @@ Open `index.html` in browser
 
 * ✅ Add **JWT-based authentication**
 * ✅ Role-based access control (Admin/User)
-* ✅ Replace JSON with **MySQL / MongoDB**
+* ✅ Add Pymongo with **MySQL / MongoDB**
 * ✅ Implement **WebSockets for real-time updates**
 * ✅ Add SMS/Email notifications (Twilio)
 * ✅ Deploy on cloud (AWS / Render)
